@@ -22,7 +22,8 @@
     "copy-css": "cp src/ol/ol.css build/ol/ol.css",
     "transpile": "rm -rf build/ol && mkdir -p build && buble --input src/ol --output build/ol --no modules --sourcemap",
     "typecheck": "tsc --pretty",
-    "apidoc": "jsdoc config/jsdoc/api/index.md -c config/jsdoc/api/conf.json -P package.json -d build/apidoc"
+    "apidoc": "jsdoc config/jsdoc/api/index.md -c config/jsdoc/api/conf.json -P package.json -d build/apidoc",
+    "crumbs": "codecrumbs -d src/ol -e src/ol/index.js"
   },
   "main": "index.js",
   "repository": {
@@ -48,6 +49,7 @@
     "buble-loader": "^0.5.1",
     "chaikin-smooth": "^1.0.4",
     "clean-css-cli": "4.2.1",
+    "codecrumbs": "^1.1.5",
     "copy-webpack-plugin": "^4.4.1",
     "coveralls": "3.0.1",
     "eslint": "^5.8.0",

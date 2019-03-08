@@ -145,7 +145,6 @@ class PluggableMap extends BaseObject {
    * @param {MapOptions} options Map options.
    */
   constructor(options) {
-
     super();
 
     const optionsInternal = createOptionsInternal(options);
@@ -188,7 +187,10 @@ class PluggableMap extends BaseObject {
     /**
      * @private
      */
+    //cc:map-first-render#1;initialize animationDelay_
     this.animationDelay_ = function() {
+      //cc:map-first-render#6;run animationDelay_
+      //cc:map-render#2;run animationDelay_
       this.animationDelayKey_ = undefined;
       this.renderFrame_.call(this, Date.now());
     }.bind(this);
@@ -246,6 +248,7 @@ class PluggableMap extends BaseObject {
      * @private
      * @type {!HTMLElement}
      */
+    //cc:viewport;create view port
     this.viewport_ = document.createElement('div');
     this.viewport_.className = 'ol-viewport' + (TOUCH ? ' ol-touch' : '');
     this.viewport_.style.position = 'relative';
@@ -260,6 +263,7 @@ class PluggableMap extends BaseObject {
      * @private
      * @type {!HTMLElement}
      */
+    //cc:overlay;create overlay container
     this.overlayContainer_ = document.createElement('div');
     this.overlayContainer_.className = 'ol-overlaycontainer';
     this.viewport_.appendChild(this.overlayContainer_);
@@ -268,6 +272,7 @@ class PluggableMap extends BaseObject {
      * @private
      * @type {!HTMLElement}
      */
+    //cc:overlay;create overlay container stop event
     this.overlayContainerStopEvent_ = document.createElement('div');
     this.overlayContainerStopEvent_.className = 'ol-overlaycontainer-stopevent';
     const overlayEvents = [
@@ -307,6 +312,7 @@ class PluggableMap extends BaseObject {
      */
     this.keyHandlerKeys_ = null;
 
+    //cc:viewport;add listener
     listen(this.viewport_, EventType.CONTEXTMENU, this.handleBrowserEvent, this);
     listen(this.viewport_, EventType.WHEEL, this.handleBrowserEvent, this);
     listen(this.viewport_, EventType.MOUSEWHEEL, this.handleBrowserEvent, this);
@@ -364,6 +370,7 @@ class PluggableMap extends BaseObject {
      * @private
      * @type {TileQueue}
      */
+    //cc:tile-queue;initialize TileQueue
     this.tileQueue_ = new TileQueue(
       this.getTilePriority.bind(this),
       this.handleTileChange_.bind(this));
@@ -375,6 +382,8 @@ class PluggableMap extends BaseObject {
      */
     this.skippedFeatureUids_ = {};
 
+    //cc:map;add MapProperty listeners
+    //cc:map-first-render#2;set handleLayerGroupChanged_
     listen(
       this, getChangeEventType(MapProperty.LAYERGROUP),
       this.handleLayerGroupChanged_, this);
@@ -387,8 +396,10 @@ class PluggableMap extends BaseObject {
 
     // setProperties will trigger the rendering of the map if the map
     // is "defined" already.
+    //cc:map-first-render#3;set properties
     this.setProperties(optionsInternal.values);
 
+    //cc:map;set map in controls and add controls listeners
     this.controls.forEach(
       /**
        * @param {import("./control/Control.js").default} control Control.
@@ -414,6 +425,7 @@ class PluggableMap extends BaseObject {
         event.element.setMap(null);
       }, this);
 
+    //cc:map;set map in interactions and add interactions listeners
     this.interactions.forEach(
       /**
        * @param {import("./interaction/Interaction.js").default} interaction Interaction.
@@ -439,6 +451,7 @@ class PluggableMap extends BaseObject {
         event.element.setMap(null);
       }, this);
 
+    //cc:map;set map in overlays_ and add overlays_ listeners
     this.overlays_.forEach(this.addOverlayInternal_.bind(this));
 
     listen(this.overlays_, CollectionEventType.ADD,
@@ -988,6 +1001,7 @@ class PluggableMap extends BaseObject {
    * @private
    */
   handleSizeChanged_() {
+    //cc:map-render;handleSizeChanged_
     this.render();
   }
 
@@ -1044,6 +1058,7 @@ class PluggableMap extends BaseObject {
    * @private
    */
   handleTileChange_() {
+    //cc:map-render;handleTileChange_
     this.render();
   }
 
@@ -1051,6 +1066,7 @@ class PluggableMap extends BaseObject {
    * @private
    */
   handleViewPropertyChanged_() {
+    //cc:map-render;handleTileChange_
     this.render();
   }
 
@@ -1076,6 +1092,7 @@ class PluggableMap extends BaseObject {
         view, EventType.CHANGE,
         this.handleViewPropertyChanged_, this);
     }
+    //cc:map-render;handleViewChanged_
     this.render();
   }
 
@@ -1083,6 +1100,8 @@ class PluggableMap extends BaseObject {
    * @private
    */
   handleLayerGroupChanged_() {
+    //cc:map-first-render#4;run handleLayerGroupChanged_
+
     if (this.layerGroupPropertyListenerKeys_) {
       this.layerGroupPropertyListenerKeys_.forEach(unlistenByKey);
       this.layerGroupPropertyListenerKeys_ = null;
@@ -1098,6 +1117,7 @@ class PluggableMap extends BaseObject {
           this.render, this)
       ];
     }
+    //cc:map-render;handleLayerGroupChanged_
     this.render();
   }
 
@@ -1124,6 +1144,8 @@ class PluggableMap extends BaseObject {
    * @api
    */
   render() {
+    //cc:map-first-render#5; run render
+    //cc:map-render#1; run render
     if (this.animationDelayKey_ === undefined) {
       this.animationDelayKey_ = requestAnimationFrame(this.animationDelay_);
     }
@@ -1179,6 +1201,8 @@ class PluggableMap extends BaseObject {
    * @private
    */
   renderFrame_(time) {
+    //cc:map-first-render#7; run renderFrame_
+    //cc:map-render#3; run renderFrame_
     let viewState;
 
     const size = this.getSize();
@@ -1223,10 +1247,13 @@ class PluggableMap extends BaseObject {
     }
 
     this.frameState_ = frameState;
+    //cc:map-first-render#8; run renderer_.renderFrame
+    //cc:map-render#4; run renderer_.renderFrame
     this.renderer_.renderFrame(frameState);
 
     if (frameState) {
       if (frameState.animate) {
+        //cc:map-render;frameState.animate in renderFrame_
         this.render();
       }
       Array.prototype.push.apply(this.postRenderFunctions_, frameState.postRenderFunctions);
@@ -1305,6 +1332,7 @@ class PluggableMap extends BaseObject {
    */
   skipFeature(feature) {
     this.skippedFeatureUids_[getUid(feature)] = true;
+    //cc:map-render;skipFeature
     this.render();
   }
 
@@ -1340,6 +1368,7 @@ class PluggableMap extends BaseObject {
    */
   unskipFeature(feature) {
     delete this.skippedFeatureUids_[getUid(feature)];
+    //cc:map-render;unskipFeature
     this.render();
   }
 }
@@ -1350,7 +1379,7 @@ class PluggableMap extends BaseObject {
  * @return {MapOptionsInternal} Internal map options.
  */
 function createOptionsInternal(options) {
-
+  //cc:map;create options internal
   /**
    * @type {HTMLElement|Document}
    */
@@ -1366,6 +1395,7 @@ function createOptionsInternal(options) {
    */
   const values = {};
 
+  //cc:map;initialize properties
   const layerGroup = options.layers && typeof /** @type {?} */ (options.layers).getLayers === 'function' ?
     /** @type {LayerGroup} */ (options.layers) : new LayerGroup({layers: /** @type {Collection} */ (options.layers)});
   values[MapProperty.LAYERGROUP] = layerGroup;
@@ -1375,6 +1405,7 @@ function createOptionsInternal(options) {
   values[MapProperty.VIEW] = options.view !== undefined ?
     options.view : new View();
 
+  //cc:map;initialize controls, interactions, overlay option
   let controls;
   if (options.controls !== undefined) {
     if (Array.isArray(options.controls)) {
